@@ -1,0 +1,29 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "Divya",
+    "database": "Recipe",
+    "host": "localhost",
+    "dialect": "postgres",
+    "port": "5432",
+    "jwtSecret": "recipBackend"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "Divya",
+    "database": "Recipe_test",
+    "host": "localhost",
+    "dialect": "postgres",
+    "port": "5432",
+    "jwtSecret": "recipBackend" 
+  },
+  "production": {
+    "username": "postgres",
+    "password": "Divya",
+    "database": "Recipe_production",
+    "host": "localhost",
+    "dialect": "postgres",
+    "port": "5432",
+    "jwtSecret": "recipBackend" 
+  }
+}
