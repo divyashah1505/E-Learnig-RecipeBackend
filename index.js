@@ -8,7 +8,6 @@ const cloudinaryMiddleware = require('./middleware/cloudinary');
 const { addCategory } = require('./Admin/Controllers/categoriesCrudController');
 const { addSubcategory } = require('./Admin/Controllers/subcategoriescrudcontroller');
 const plansCrudController = require('./Admin/Controllers/Planscrudscontroller');
-// Import routes
 const categoryRoutes = require('./Customer/Routes/categoryRoutes');
 const paymentroutes = require('./Customer/Routes/Paymentroutes');
 const categoriesCrudRoutes = require('./Admin/Routes/categoriesCrudRoutes');

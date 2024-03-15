@@ -53,11 +53,13 @@ const addCategory = async (req, res) => {
 
 const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.findAll();
-    res.status(200).json(categories);
+      const categories = await Category.findAll({
+          order: [['createdAt', 'DESC']]
+      });
+      res.status(200).json(categories);
   } catch (err) {
-    console.error("Error fetching categories:", err);
-    res.status(500).json({ error: "Error fetching categories." });
+      console.error("Error fetching categories:", err);
+      res.status(500).json({ error: "Error fetching categories." });
   }
 };
 

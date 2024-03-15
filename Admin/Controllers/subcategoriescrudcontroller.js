@@ -69,7 +69,10 @@ const getSubcategoriesByCategoryId = async (req, res) => {
     const subcategories = await SubCategory.findAll({
       where: {
         Category_id: categoryId
-      }
+        
+      },
+      order: [['createdAt', 'DESC']]
+
     });
 
     // Respond with the fetched subcategories
@@ -143,4 +146,4 @@ const deleteSubcategory = async (req, res) => {
 };
 
 module.exports = { addSubcategory, getSubcategoriesByCategoryId, editSubcategory, deleteSubcategory };
-// succssfully crud of subcategories n changes 
+   
