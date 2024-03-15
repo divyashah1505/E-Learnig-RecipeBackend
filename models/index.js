@@ -78,6 +78,7 @@ const Video = require('./Video')(sequelize, Sequelize);
 const Recipe = require('./Recipe')(sequelize, Sequelize);
 const Combo = require('./Combo')(sequelize, Sequelize);
 const Plan = require('./Plans')(sequelize, Sequelize);
+const payment = require('./Payments')(sequelize, Sequelize);
 // Add associations if any
 Category.hasMany(SubCategory, { foreignKey: 'Category_id' });
 SubCategory.belongsTo(Category, { foreignKey: 'Category_id' });
@@ -92,6 +93,7 @@ db.Video = Video;
 db.Recipe = Recipe;
 db.Combo = Combo;
 db.Plan = Plan;
+db.payment= payment;
 
 // Synchronize models
 async function init() {

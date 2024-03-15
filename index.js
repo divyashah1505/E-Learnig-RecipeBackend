@@ -10,6 +10,7 @@ const { addSubcategory } = require('./Admin/Controllers/subcategoriescrudcontrol
 const plansCrudController = require('./Admin/Controllers/Planscrudscontroller');
 // Import routes
 const categoryRoutes = require('./Customer/Routes/categoryRoutes');
+const paymentroutes = require('./Customer/Routes/Paymentroutes');
 const categoriesCrudRoutes = require('./Admin/Routes/categoriesCrudRoutes');
 const  plansCrudRoutes = require('./Admin/Routes/Planscrudroutes') 
 const addCombo = require('./Admin/Routes/Combocrudroutes');
@@ -90,6 +91,7 @@ app.use('/',recipe);
 app.use('/',getActiveCombos);
 app.use('/',plansCrudRoutes);
 app.use('/',Viewplansroutes);
+app.use('/',paymentroutes);
 
 
 // Add routes for adding category and subcategory

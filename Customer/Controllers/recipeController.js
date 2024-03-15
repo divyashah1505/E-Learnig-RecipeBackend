@@ -1,6 +1,7 @@
-const { Recipe } = require("../../models");
+// Recipecontroller.js
+const { Recipe } = require("../../models/");
 
-// Function to get all recipes
+// Function to get all recipes by subcategory
 const getRecipesBySubcategory = async (req, res) => {
   try {
     const { subcategoryId } = req.params;
@@ -8,7 +9,7 @@ const getRecipesBySubcategory = async (req, res) => {
     // Fetch only non-deleted recipes belonging to the specified subcategory
     const recipes = await Recipe.findAll({
       where: {
-        Sub_Category_id: subcategoryId,
+        Sub_Category_id: subcategoryId, // Corrected parameter name here
         deletedAt: null
       }
     });
@@ -41,4 +42,33 @@ const getFeaturedRecipes = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-module.exports = { getRecipesBySubcategory, getFeaturedRecipes };
+
+// Function to get a specific recipe by ID within a specific subcategory
+const getRecipeById = async (req, res) => {
+  try {
+    const { subcategoryId, recipeId } = req.params;
+
+    // Fetch the specified recipe within the specified subcategory
+    const recipe = await Recipe.findOne({
+      where: {
+        Recipe_id: recipeId, // Corrected parameter name here
+        Sub_Category_id: subcategoryId,
+        deletedAt: null
+      }
+    });
+
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    // Return the recipe as JSON response
+    res.status(200).json(recipe);
+  } catch (err) {
+    // Handle errors
+    console.error("Error fetching recipe by id within subcategory:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+module.exports = { getRecipesBySubcategory, getFeaturedRecipes, getRecipeById };
