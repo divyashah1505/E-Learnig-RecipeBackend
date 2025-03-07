@@ -86,11 +86,18 @@
 // module.exports = { registerCustomer };
 // registrationcontroller.js
 
+
+
+
+
+
+
 const pool = require('../../config/db');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config.json');
+const { Customer } = require('../../models');
 
-const jwtSecret = config.development.jwtSecret; // Ensure to access the correct environment configuration
+const jwtSecret = config.development.jwtSecret;
 
 const isStrongPassword = (password) => {
   const passwordRegex =
@@ -165,4 +172,16 @@ const registerCustomer = async (req, res) => {
   }
 };
 
-module.exports = { registerCustomer };
+
+const viewAllCustomers = async (req, res) => {
+  try {
+    const result = await Customer.findAll();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+module.exports = { registerCustomer, viewAllCustomers };

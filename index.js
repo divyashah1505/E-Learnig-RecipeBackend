@@ -35,7 +35,7 @@ app.use(express.json());
 //     credentials: true,
 // }));
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow only requests from your frontend's origin
+    origin: ['http://localhost:3000', 'http://localhost:3001','http://localhost:3002'], // Allow only requests from your frontend's origin
     credentials: true, // Allow cookies and authentication headers to be included in requests
   };
   

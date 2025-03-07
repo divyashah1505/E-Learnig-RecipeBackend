@@ -11,7 +11,7 @@ router.post('/aplans', plansController.addPlan);
 router.get('/vplans', plansController.getAllPlans);
 
 // Route to edit a plan
-router.put('/editplans/:planId', plansController.editPlan);
+router.put('/editplans/:planid', plansController.editPlan);
 
 // Route to soft delete a plan
 router.delete('/dplans/:planId', plansController.deletePlan);

@@ -5,4 +5,5 @@ const categoryController = require('../../Customer/Controllers/categoryControlle
 // Route to get all categories for customers
 router.get('/viewcategories', categoryController.getCategories);
 
+
 module.exports = router;

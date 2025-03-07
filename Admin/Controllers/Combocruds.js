@@ -1,6 +1,5 @@
 const { Combo } = require("../../models");
 const uploadToCloudinary = require("../../middleware/cloudinary");
-
 const addCombo = async (req, res) => {
   try {
     const fileName = req.files ? Object.values(req.files) : [];
@@ -51,6 +50,7 @@ const addCombo = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 const editCombo = async (req, res) => {
   const { comboId } = req.params;

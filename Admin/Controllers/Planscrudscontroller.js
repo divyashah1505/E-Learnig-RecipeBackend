@@ -1,21 +1,15 @@
-// plansCrudController.js
-
-// const { Plans } = require("../../models");
 const { Plan } = require("../../models");
 
 const addPlan = async (req, res) => {
   try {
-    console.log('hello');
-    console.log(req.body);
     const { planname, description, planprice } = req.body;
-    console.log('jasdgcvs');
     if (!planname) {
       console.error("Plan name is required.");
       return res.status(400).json({ error: "Plan name is required." });
     }
 
     const newPlan = await Plan.create({
-        planname,
+      planname,
       description,
       planprice,
       createdAt: new Date(),
@@ -30,7 +24,7 @@ const addPlan = async (req, res) => {
     console.log("Plan added successfully");
     res.status(201).json({
       message: "Plan added successfully",
-      planId: newPlan.Plan_id,
+      planId: newPlan.planid,
     });
   } catch (err) {
     console.error("Error adding plan:", err);
@@ -40,7 +34,9 @@ const addPlan = async (req, res) => {
 
 const getAllPlans = async (req, res) => {
   try {
-    const plans = await Plan.findAll();
+    const plans = await Plan.findAll({
+      order: [['planid', 'ASC']]
+    });
     res.status(200).json(plans);
   } catch (err) {
     console.error("Error fetching plans:", err);
@@ -50,24 +46,24 @@ const getAllPlans = async (req, res) => {
 
 const editPlan = async (req, res) => {
   const { planid } = req.params;
-  const { planname, Plan_Description, Price } = req.body;
+  const { planname, description, planprice } = req.body;
 
   try {
-    const plan = await Plan.findByPk(planId);
+    const plan = await Plan.findByPk(planid);
     if (!plan) {
       return res.status(404).json({ error: "Plan not found." });
     }
 
-    if (Plan_Name !== undefined && Plan_Name.trim() !== '') {
-      plan.Plan_Name = Plan_Name.trim();
+    if (planname !== undefined && planname.trim() !== '') {
+      plan.planname = planname.trim();
     }
 
-    if (Plan_Description !== undefined && Plan_Description.trim() !== '') {
-      plan.Plan_Description = Plan_Description.trim();
+    if (description !== undefined && description.trim() !== '') {
+      plan.description = description.trim();
     }
 
-    if (Price !== undefined && !isNaN(Price)) {
-      plan.Price = Price;
+    if (planprice !== undefined && !isNaN(planprice)) {
+      plan.planprice = planprice;
     }
 
     await plan.save();
@@ -88,7 +84,7 @@ const deletePlan = async (req, res) => {
       return res.status(404).json({ error: "Plan not found." });
     }
 
-    await Plan.destroy({ where: { Plan_id: planId } });
+    await Plan.destroy({ where: { planid: planId } });
 
     console.log("Plan soft deleted successfully");
     res.status(200).json({ message: "Plan soft deleted successfully" });
@@ -99,3 +95,5 @@ const deletePlan = async (req, res) => {
 };
 
 module.exports = { addPlan, getAllPlans, editPlan, deletePlan };
+
+

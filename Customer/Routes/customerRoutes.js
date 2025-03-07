@@ -1,7 +1,7 @@
 const express = require('express');
 const customerRouter = express.Router();
 const authMiddleware = require('../../middleware/Auth');
-
+const { viewAllCustomers } = require('../Controllers/customerRegistrationController')
 
 // Import customer controllers
 const customerLoginController = require('../../Customer/Controllers/customerLoginController'); // Adjusted path here
@@ -18,9 +18,14 @@ customerRouter.post('/register', (req, res) => {
   customerRegistrationController(req, res);
 });
 
+customerRouter.get('/vcustomers', authMiddleware, (req, res) => {
+  viewAllCustomers(req, res);
+});
+
 customerRouter.get('/testData', authMiddleware, (req, res) => {
   // Handle customer registration route
   // console.log('work');
   // customerRegistrationController(req, res);
 });
 module.exports = customerRouter;
+
