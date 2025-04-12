@@ -1,23 +1,34 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// controllers/paymentController.js
+const stripe = require('stripe')('sk_test_...'); // Replace with your Stripe Secret Key
 
-exports.processPayment = async (req, res) => {
-    try {
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: req.body.amount,
-            currency: 'usd',
-        });
+const createCheckoutSession = async (req, res) => {
+  try {
+    const { planName, price } = req.body;
 
-        res.json({ client_secret: paymentIntent.client_secret });
-    } catch (error) {
-        console.error('Error processing payment:', error);
-        res.status(500).json({ error: 'Payment processing failed' });
-    }
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: 'inr',
+          product_data: {
+            name: planName,
+          },
+          unit_amount: price * 100, // Stripe accepts amount in paisa
+        },
+        quantity: 1,
+      }],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/success',
+      cancel_url: 'http://localhost:3000/cancel',
+    });
+
+    res.status(200).json({ id: session.id });
+  } catch (error) {
+    console.error('Stripe Checkout Error:', error);
+    res.status(500).json({ error: 'Failed to create Stripe checkout session' });
+  }
 };
 
-exports.paymentSuccess = (req, res) => {
-    res.send('Payment successful');
-};
-
-exports.paymentCancel = (req, res) => {
-    res.send('Payment cancelled');
+module.exports = {
+  createCheckoutSession,
 };

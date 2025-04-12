@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const db = require('./config/db');
+require('dotenv').config(); // ✅ Ensures env vars like MAIL_USERNAME are loaded early
 
 const fileUpload = require('express-fileupload');
 const cloudinaryMiddleware = require('./middleware/cloudinary');
@@ -91,6 +92,8 @@ app.use('/',getActiveCombos);
 app.use('/',plansCrudRoutes);
 app.use('/',Viewplansroutes);
 app.use('/',paymentroutes);
+app.use('/api/payment', paymentroutes); // Mount payment routes
+
 
 
 // Add routes for adding category and subcategory

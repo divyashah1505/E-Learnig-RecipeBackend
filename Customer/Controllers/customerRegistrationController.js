@@ -85,27 +85,22 @@
 
 // module.exports = { registerCustomer };
 // registrationcontroller.js
-
-
-
-
-
-
-
 const pool = require('../../config/db');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config.json');
 const { Customer } = require('../../models');
+const { sendWelcomeEmail } = require('../../utils/mailer');
+const bcrypt = require('bcrypt');
 
 const jwtSecret = config.development.jwtSecret;
 
 const isStrongPassword = (password) => {
-  const passwordRegex =
-    /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{6,}$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{6,}$/;
   return passwordRegex.test(password);
 };
 
 const registerCustomer = async (req, res) => {
+  console.log("🟢 registerCustomer controller triggered");
   try {
     const { full_name, email_address, phone_number, password } = req.body;
 
@@ -145,14 +140,28 @@ const registerCustomer = async (req, res) => {
       });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     const token = jwt.sign({ email: email_address }, jwtSecret, { expiresIn: '1h' });
 
     const result = await pool.query(
-      `INSERT INTO customers (full_name, email_address, phone_number, password, token, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
-      [full_name, email_address, phone_number, password, token]
+      `INSERT INTO customers (full_name, email_address, phone_number, password, token, "createdAt", "updatedAt") 
+       VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
+      [full_name, email_address, phone_number, hashedPassword, token]
     );
+
     const newUser = result.rows[0];
+
+    // Email send with logging
+    try {
+      console.log("📨 Attempting to send welcome email to:", email_address);
+      await sendWelcomeEmail(email_address, full_name);
+      console.log(`✅ Welcome email sent to ${email_address}`);
+    } catch (emailError) {
+      console.error(`❌ Error sending welcome email:`, emailError);
+    }
+
     return res.status(201).json({ message: "Registration successful", user: newUser, token });
+
   } catch (error) {
     console.error(error);
 
@@ -172,7 +181,6 @@ const registerCustomer = async (req, res) => {
   }
 };
 
-
 const viewAllCustomers = async (req, res) => {
   try {
     const result = await Customer.findAll();
@@ -182,6 +190,5 @@ const viewAllCustomers = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
 
 module.exports = { registerCustomer, viewAllCustomers };
