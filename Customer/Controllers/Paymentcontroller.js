@@ -1,4 +1,4 @@
-// controllers/paymentController.js
+// Customer/Controllers/Paymentcontroller.js
 const stripe = require('stripe')('sk_test_...'); // Replace with your Stripe Secret Key
 
 const createCheckoutSession = async (req, res) => {
@@ -13,7 +13,7 @@ const createCheckoutSession = async (req, res) => {
           product_data: {
             name: planName,
           },
-          unit_amount: price * 100, // Stripe accepts amount in paisa
+          unit_amount: price * 100,
         },
         quantity: 1,
       }],
