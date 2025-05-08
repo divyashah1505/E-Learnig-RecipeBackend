@@ -5,8 +5,11 @@
     "database": "Recipe",
     "host": "localhost",
     "dialect": "postgres",
-    "port": "5432",
-    "jwtSecret": "recipBackend"
+    "port": 5432,
+    "jwtSecret": "recipBackend",
+    "dialectOptions": {
+      "ssl": false
+    }
   },
   "test": {
     "username": "postgres",
@@ -14,16 +17,22 @@
     "database": "Recipe_test",
     "host": "localhost",
     "dialect": "postgres",
-    "port": "5432",
-    "jwtSecret": "recipBackend" 
+    "port": 5432,
+    "jwtSecret": "recipBackend",
+    "dialectOptions": {
+      "ssl": false
+    }
   },
-  "production": {
-    "username": "postgres",
-    "password": "Divya",
-    "database": "Recipe_production",
-    "host": "localhost",
-    "dialect": "postgres",
-    "port": "5432",
-    "jwtSecret": "recipBackend" 
-  }
+ "production": {
+  "use_env_variable": "DATABASE_URL",
+  "dialect": "postgres",
+  "dialectOptions": {
+    "ssl": {
+      "require": true,
+      "rejectUnauthorized": false
+    }
+  },
+  "jwtSecret": "recipBackend"
+}
+
 }
