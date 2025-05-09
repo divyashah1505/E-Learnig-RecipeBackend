@@ -12,7 +12,7 @@ const plansCrudController = require('./Admin/Controllers/Planscrudscontroller');
 const categoryRoutes = require('./Customer/Routes/categoryRoutes');
 const paymentroutes = require('./Customer/Routes/Paymentroutes');
 const categoriesCrudRoutes = require('./Admin/Routes/categoriesCrudRoutes');
-const  plansCrudRoutes = require('./Admin/Routes/Planscrudroutes') 
+const plansCrudRoutes = require('./Admin/Routes/Planscrudroutes');
 const addCombo = require('./Admin/Routes/Combocrudroutes');
 const categoriesRoutes = require('./Customer/Routes/categoryRoutes');
 const videosRoutes = require('./Customer/Routes/videosRoutes');
@@ -25,54 +25,35 @@ const viewSubcategories = require('./Customer/Routes/viewsubcategoriesroutes');
 const UploadRecipe = require('./Admin/Routes/UploadReciperoutes');
 const getActiveCombos = require('./Customer/Routes/Viewcomboroutes');
 const Viewplansroutes = require('./Customer/Routes/Viewplansroutes');
-const recipe = require('./Customer/Routes/recipeRoutes')
+const recipe = require('./Customer/Routes/recipeRoutes');
+
 const app = express();
 app.use(express.json());
 
-
-// Enable CORS
-// app.use(cors({
-//     origin: '*',
-//     credentials: true,
-// }));
+// Enable CORS for specific origins
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:3001','http://localhost:3002'], // Allow only requests from your frontend's origin
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'https://customerdashboard-phi.vercel.app'], // Allow frontend URLs
     credentials: true, // Allow cookies and authentication headers to be included in requests
-  };
-  
-  app.use(cors(corsOptions));
-  app.options('*', cors(corsOptions)); // Enable preflight for all routes
-// const corsOptions = {
-//     origin: function (origin, callback) {
-//         // Check if the request's origin is from localhost on any port
-//         if (/^http:\/\/localhost:\d+$/.test(origin) || !origin) {
-//             callback(null, true); // Allow if it's from localhost or if origin is undefined (non-web context)
-//         } else {
-//             callback(new Error('Not allowed by CORS')); // Block other origins
-//         }
-//     },
-//     credentials: true, // Allow cookies and authentication headers to be included in requests
-// };
+};
 
+// Enable CORS for all routes with the specified options
 app.use(cors(corsOptions));
+
+// Enable preflight requests for all routes
 app.options('*', cors(corsOptions));
+
 // Middleware for parsing request bodies
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(fileUpload({
-    limits:{
-        fileSize:1000000*500,
-        files:10000
-    }
-}))
-
 app.use(bodyParser.json());
+app.use(fileUpload({
+    limits: {
+        fileSize: 1000000 * 500,
+        files: 10000
+    }
+}));
 
 // Serve static files from the uploads directory
 app.use('/', express.static("./uploads"));
-
-
-// const fileUpload = require('express-fileupload');
 
 // Bind routes
 app.use('/', adminLoginRoutes);
@@ -80,21 +61,19 @@ customerRoutes.bind_Url(app);
 customerRoutes2.bind_Url(app);
 app.use('/', registerCustomer);
 app.use('/', categoriesCrudRoutes);
-app.use('/',UploadRecipe);
+app.use('/', UploadRecipe);
 app.use('/', categoryRoutes);
 app.use('/', addCombo);
 app.use('/', categoriesRoutes);
 app.use('/', videosRoutes);
 app.use('/', subcategoriesCrudRoutes);
 app.use('/', viewSubcategories);
-app.use('/',recipe);
-app.use('/',getActiveCombos);
-app.use('/',plansCrudRoutes);
-app.use('/',Viewplansroutes);
-app.use('/',paymentroutes);
+app.use('/', recipe);
+app.use('/', getActiveCombos);
+app.use('/', plansCrudRoutes);
+app.use('/', Viewplansroutes);
+app.use('/', paymentroutes);
 app.use('/api/payment', paymentroutes); // Mount payment routes
-
-
 
 // Add routes for adding category and subcategory
 app.post('/categories', cloudinaryMiddleware, addCategory);

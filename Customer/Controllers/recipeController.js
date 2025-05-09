@@ -75,7 +75,8 @@
 
 
 // module.exports = { getRecipesBySubcategory, getFeaturedRecipes, getRecipeById };
-const { Recipe } = require("../../models/");
+const { db } = require("../../models");
+const Recipe = db.Recipe;
 
 // Function to get all recipes by subcategory
 const getRecipesBySubcategory = async (req, res) => {
@@ -85,7 +86,7 @@ const getRecipesBySubcategory = async (req, res) => {
     const recipes = await Recipe.findAll({
       where: {
         Sub_Category_id: subcategoryId,
-        deletedAt: null,
+        deletedAt: null, // Soft delete respected
       },
     });
 
@@ -96,36 +97,25 @@ const getRecipesBySubcategory = async (req, res) => {
     res.status(200).json(recipes);
   } catch (err) {
     console.error("Error fetching recipes by subcategory:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error", details: err.message });
   }
 };
 
 // Function to get only featured recipes
 const getFeaturedRecipes = async (req, res) => {
   try {
-    const featuredRecipes = await Recipe.findAll({
+    const recipes = await Recipe.findAll({
       where: {
-        deletedAt: null,
-        Featured_Recipe: true
-      }
+        Featured_Recipe: true,
+        deletedAt: null, // Optional but consistent
+      },
     });
-
-    console.log("✅ Featured Recipes Data from DB:", featuredRecipes); // Debugging
-
-    res.setHeader("Content-Type", "application/json");
-    res.status(200).json({ success: true, data: featuredRecipes });
-  } catch (err) {
-    console.error("❌ Error fetching featured recipes:", err);
-
-    res.setHeader("Content-Type", "application/json");
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: err.message
-    });
+    res.status(200).json(recipes);
+  } catch (error) {
+    console.error('❌ Error fetching featured recipes:', error);
+    res.status(500).json({ error: 'Failed to fetch Featured Recipes' });
   }
 };
-
 
 
 // Function to get a specific recipe by ID within a specific subcategory
@@ -148,8 +138,12 @@ const getRecipeById = async (req, res) => {
     res.status(200).json(recipe);
   } catch (err) {
     console.error("Error fetching recipe by ID within subcategory:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error", details: err.message });
   }
 };
 
-module.exports = { getRecipesBySubcategory, getFeaturedRecipes, getRecipeById };
+module.exports = {
+  getRecipesBySubcategory,
+  getFeaturedRecipes,
+  getRecipeById
+};

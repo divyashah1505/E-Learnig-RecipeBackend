@@ -1,9 +1,15 @@
+// models/Recipe.js
+'use strict';
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Recipe extends Model {
     static associate(models) {
-      // Define associations if any
+      // Add association if Recipe belongs to SubCategory
+      Recipe.belongsTo(models.SubCategory, {
+        foreignKey: 'Sub_Category_id',
+        as: 'subcategory',
+      });
     }
   }
 
@@ -42,21 +48,13 @@ module.exports = (sequelize, DataTypes) => {
     Sub_Category_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
     }
   }, {
     sequelize,
     modelName: 'Recipe',
-    tableName: 'Recipe', // Ensure Sequelize uses the correct table name
-    timestamps: true ,// Enable timestamps to manage createdAt and updatedAt fields
-    paranoid:true
+    tableName: 'Recipe',
+    timestamps: true,
+    paranoid: true,
   });
 
   return Recipe;

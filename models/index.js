@@ -1,6 +1,7 @@
+// models/index.js
 'use strict';
 
-require('dotenv').config(); // Load .env
+require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
@@ -12,7 +13,6 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-// Initialize Sequelize with environment variable or fallback config
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
@@ -26,43 +26,38 @@ if (config.use_env_variable) {
 }
 
 // Import models
-const Customer = require('./Customer')(sequelize, Sequelize);
-const Category = require('./Category')(sequelize, Sequelize);
-const SubCategory = require('./subcategory')(sequelize, Sequelize);
-const Video = require('./Video')(sequelize, Sequelize);
-const Recipe = require('./Recipe')(sequelize, Sequelize);
-const Combo = require('./Combo')(sequelize, Sequelize);
-const Plan = require('./Plans')(sequelize, Sequelize);
-const Payment = require('./Payments')(sequelize, Sequelize);
+db.Customer = require('./Customer')(sequelize, Sequelize);
+db.Category = require('./Category')(sequelize, Sequelize);
+db.SubCategory = require('./subcategory')(sequelize, Sequelize);
+db.Video = require('./Video')(sequelize, Sequelize);
+db.Recipe = require('./Recipe')(sequelize, Sequelize); // ✅ make sure this matches file name exactly
+db.Combo = require('./Combo')(sequelize, Sequelize);
+db.Plan = require('./Plans')(sequelize, Sequelize);
+db.Payment = require('./Payments')(sequelize, Sequelize);
 
 // Define associations
-Category.hasMany(SubCategory, { foreignKey: 'Category_id' });
-SubCategory.belongsTo(Category, { foreignKey: 'Category_id' });
+db.Category.hasMany(db.SubCategory, { foreignKey: 'Category_id' });
+db.SubCategory.belongsTo(db.Category, { foreignKey: 'Category_id' });
 
-SubCategory.hasMany(Video, { foreignKey: 'Sub_Category_id' });
-Video.belongsTo(SubCategory, { foreignKey: 'Sub_Category_id' });
+db.SubCategory.hasMany(db.Video, { foreignKey: 'Sub_Category_id' });
+db.Video.belongsTo(db.SubCategory, { foreignKey: 'Sub_Category_id' });
 
-// Register models
-db.Customer = Customer;
-db.Category = Category;
-db.SubCategory = SubCategory;
-db.Video = Video;
-db.Recipe = Recipe;
-db.Combo = Combo;
-db.Plan = Plan;
-db.Payment = Payment;
+// Add Recipe association to SubCategory if needed
+db.SubCategory.hasMany(db.Recipe, { foreignKey: 'Sub_Category_id' });
+db.Recipe.belongsTo(db.SubCategory, { foreignKey: 'Sub_Category_id' });
 
-// Add Sequelize instance to db
+// Sequelize instance
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Sync models
 async function init() {
   try {
-    await sequelize.sync({ force: false }); // Set to true only if you want to drop and recreate tables
+    await sequelize.authenticate();
+    console.log('✅ Database connection established successfully.');
+    await sequelize.sync({ force: false });
     console.log('✅ All models were synchronized successfully.');
   } catch (error) {
-    console.error('❌ Error synchronizing models:', error);
+    console.error('❌ Error connecting to the database:', error);
     throw error;
   }
 }

@@ -1,17 +1,15 @@
 // customerPlansController.js
 
 const { Plan } = require("../../models");
-
 const getActivePlans = async (req, res) => {
   try {
-    const activePlans = await Plan.findAll({
-      where: { deletedAt: null }
+    const plans = await Plan.findAll({
+      where: { Plan_Status: true }
     });
-
-    res.status(200).json(activePlans);
-  } catch (err) {
-    console.error("Error fetching active plans:", err);
-    res.status(500).json({ error: "Error fetching active plans." });
+    res.status(200).json(plans);
+  } catch (error) {
+    console.error('❌ Error fetching active plans:', error);
+    res.status(500).json({ error: 'Failed to fetch active plans' });
   }
 };
 
