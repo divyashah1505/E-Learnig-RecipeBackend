@@ -106,25 +106,26 @@ const getFeaturedRecipes = async (req, res) => {
     const featuredRecipes = await Recipe.findAll({
       where: {
         deletedAt: null,
-        Featured_Recipe: true
-      }
+        Featured_Recipe: true,
+      },
     });
 
-    console.log("✅ Featured Recipes Data from DB:", featuredRecipes); // Debugging
+    console.log("✅ Featured Recipes Data from DB:", featuredRecipes);
 
-    res.setHeader("Content-Type", "application/json");
     res.status(200).json({ success: true, data: featuredRecipes });
   } catch (err) {
     console.error("❌ Error fetching featured recipes:", err);
 
-    res.setHeader("Content-Type", "application/json");
     res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: err.message
+      error: err.message,
     });
   }
 };
+
+module.exports = { getFeaturedRecipes };
+
 
 
 
