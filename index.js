@@ -2,99 +2,99 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const db = require('./config/db');
-require('dotenv').config(); // ✅ Ensures env vars like MAIL_USERNAME are loaded early
+require('dotenv').config(); // ✅ Ensures .env variables are loaded early
 
 const fileUpload = require('express-fileupload');
 const cloudinaryMiddleware = require('./middleware/cloudinary');
+
+// Controller functions
 const { addCategory } = require('./Admin/Controllers/categoriesCrudController');
 const { addSubcategory } = require('./Admin/Controllers/subcategoriescrudcontroller');
-const plansCrudController = require('./Admin/Controllers/Planscrudscontroller');
-const categoryRoutes = require('./Customer/Routes/categoryRoutes');
-const paymentroutes = require('./Customer/Routes/Paymentroutes');
+
+// Routes
+const adminLoginRoutes = require('./Admin/Routes/adminloginRoutes');
+const customerRegisterRoutes = require('./Customer/Routes/customerRoutes');
+const customerRoutes = require('./Customer/Routes/customerRegistrationRoutes');
+const customerLoginRoutes = require('./Customer/Routes/customerLoginRoutes');
 const categoriesCrudRoutes = require('./Admin/Routes/categoriesCrudRoutes');
 const plansCrudRoutes = require('./Admin/Routes/Planscrudroutes');
-const addCombo = require('./Admin/Routes/Combocrudroutes');
-const categoriesRoutes = require('./Customer/Routes/categoryRoutes');
-const videosRoutes = require('./Customer/Routes/videosRoutes');
-const registerCustomer = require('./Customer/Routes/customerRoutes');
-const customerRoutes = require('./Customer/Routes/customerRegistrationRoutes');
-const customerRoutes2 = require('./Customer/Routes/customerLoginRoutes');
-const adminLoginRoutes = require('./Admin/Routes/adminloginRoutes');
+const comboRoutes = require('./Admin/Routes/Combocrudroutes');
 const subcategoriesCrudRoutes = require('./Admin/Routes/subcategoriescrudroutes');
-const viewSubcategories = require('./Customer/Routes/viewsubcategoriesroutes');
-const UploadRecipe = require('./Admin/Routes/UploadReciperoutes');
-const getActiveCombos = require('./Customer/Routes/Viewcomboroutes');
-const Viewplansroutes = require('./Customer/Routes/Viewplansroutes');
-const recipe = require('./Customer/Routes/recipeRoutes');
+const uploadRecipeRoutes = require('./Admin/Routes/UploadReciperoutes');
+
+const categoryRoutes = require('./Customer/Routes/categoryRoutes');
+const viewSubcategoriesRoutes = require('./Customer/Routes/viewsubcategoriesroutes');
+const videosRoutes = require('./Customer/Routes/videosRoutes');
+const recipeRoutes = require('./Customer/Routes/recipeRoutes');
+const viewCombosRoutes = require('./Customer/Routes/Viewcomboroutes');
+const viewPlansRoutes = require('./Customer/Routes/Viewplansroutes');
+const paymentRoutes = require('./Customer/Routes/Paymentroutes');
 
 const app = express();
-app.use(express.json());
 
-// Enable CORS for specific origins
+// CORS configuration
 const corsOptions = {
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'https://customerdashboard-phi.vercel.app'], // Allow frontend URLs
-    credentials: true, // Allow cookies and authentication headers to be included in requests
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        "https://your-ngrok-url.ngrok-free.app",
+        'https://customerdashboard-phi.vercel.app'
+    ],
+    credentials: true,
 };
-
-// Enable CORS for all routes with the specified options
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable preflight for all routes
 
-// Enable preflight requests for all routes
-app.options('*', cors(corsOptions));
-
-// Middleware for parsing request bodies
+// Middleware
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(fileUpload({
     limits: {
-        fileSize: 1000000 * 500,
+        fileSize: 1000000 * 500, // 500MB
         files: 10000
     }
 }));
 
-// Serve static files from the uploads directory
-app.use('/', express.static("./uploads"));
+// Serve static files
+app.use('/', express.static('./uploads'));
 
 // Bind routes
 app.use('/', adminLoginRoutes);
 customerRoutes.bind_Url(app);
-customerRoutes2.bind_Url(app);
-app.use('/', registerCustomer);
+customerLoginRoutes.bind_Url(app);
+app.use('/', customerRegisterRoutes);
 app.use('/', categoriesCrudRoutes);
-app.use('/', UploadRecipe);
+app.use('/', uploadRecipeRoutes);
 app.use('/', categoryRoutes);
-app.use('/', addCombo);
-app.use('/', categoriesRoutes);
+app.use('/', comboRoutes);
 app.use('/', videosRoutes);
 app.use('/', subcategoriesCrudRoutes);
-app.use('/', viewSubcategories);
-app.use('/', recipe);
-app.use('/', getActiveCombos);
+app.use('/', viewSubcategoriesRoutes);
+app.use('/', recipeRoutes);
+app.use('/', viewCombosRoutes);
 app.use('/', plansCrudRoutes);
-app.use('/', Viewplansroutes);
-app.use('/', paymentroutes);
-app.use('/api/payment', paymentroutes); // Mount payment routes
+app.use('/', viewPlansRoutes);
+app.use('/', paymentRoutes);
+app.use('/api/payment', paymentRoutes); // ✅ Optional: Alternative path for payment API
 
-// Add routes for adding category and subcategory
+// Custom routes with middleware
 app.post('/categories', cloudinaryMiddleware, addCategory);
 app.post('/', cloudinaryMiddleware, addSubcategory);
 
-// Initialize database connection and call seeder function
+// Connect to PostgreSQL
 db.connect()
-    .then(() => {
-        console.log('Connected to PostgreSQL database successfully.');
-    })
-    .catch(err => {
-        console.error('Unable to connect to the PostgreSQL database:', err);
-    });
+    .then(() => console.log('Connected to PostgreSQL database successfully.'))
+    .catch(err => console.error('Unable to connect to the PostgreSQL database:', err));
 
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something went wrong!');
 });
 
-// Set up the server to listen on a port
+// Start server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

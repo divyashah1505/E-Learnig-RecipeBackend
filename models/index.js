@@ -30,10 +30,10 @@ db.Customer = require('./Customer')(sequelize, Sequelize);
 db.Category = require('./Category')(sequelize, Sequelize);
 db.SubCategory = require('./subcategory')(sequelize, Sequelize);
 db.Video = require('./Video')(sequelize, Sequelize);
-db.Recipe = require('./Recipe')(sequelize, Sequelize); // ✅ make sure this matches file name exactly
+db.Recipe = require('./Recipe')(sequelize, Sequelize);
 db.Combo = require('./Combo')(sequelize, Sequelize);
 db.Plan = require('./Plans')(sequelize, Sequelize);
-db.Payment = require('./Payments')(sequelize, Sequelize);
+db.Payment = require('./Payments')(sequelize, Sequelize); // Ensure correct casing
 
 // Define associations
 db.Category.hasMany(db.SubCategory, { foreignKey: 'Category_id' });
@@ -42,7 +42,6 @@ db.SubCategory.belongsTo(db.Category, { foreignKey: 'Category_id' });
 db.SubCategory.hasMany(db.Video, { foreignKey: 'Sub_Category_id' });
 db.Video.belongsTo(db.SubCategory, { foreignKey: 'Sub_Category_id' });
 
-// Add Recipe association to SubCategory if needed
 db.SubCategory.hasMany(db.Recipe, { foreignKey: 'Sub_Category_id' });
 db.Recipe.belongsTo(db.SubCategory, { foreignKey: 'Sub_Category_id' });
 
@@ -50,6 +49,7 @@ db.Recipe.belongsTo(db.SubCategory, { foreignKey: 'Sub_Category_id' });
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+// Sync and authenticate
 async function init() {
   try {
     await sequelize.authenticate();
@@ -63,4 +63,4 @@ async function init() {
 }
 init();
 
-module.exports = { db };
+module.exports = db;
